@@ -320,9 +320,9 @@ class DinoVisionTransformer(nn.Module):
     def get_last_self_attention(self, x, masks=None):
         if isinstance(x, list):
             return self.forward_features_list(x, masks)
-
+            
         x = self.prepare_tokens_with_masks(x, masks)
-
+        
         # Run through model, at the last block just return the attention.
         for i, blk in enumerate(self.blocks):
             if i < len(self.blocks) - 1:
