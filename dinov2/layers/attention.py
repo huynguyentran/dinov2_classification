@@ -66,17 +66,19 @@ class Attention(nn.Module):
         x = (attn @ v).transpose(1, 2).reshape(B, N, C)
         x = self.proj(x)
         x = self.proj_drop(x)
+        
         if return_attn:
             return attn
+
         return x
+
 
 
 class MemEffAttention(Attention):
     def forward(self, x: Tensor, attn_bias=None, return_attn=False) -> Tensor:
         if not XFORMERS_AVAILABLE:
-            if attn_bias is not None:
-                assert attn_bias is None, "xFormers is required for nested tensors usage"
-                return super().forward(x, return_attn)
+            assert attn_bias is None, "xFormers is required for nested tensors usage"
+            return super().forward(x, return_attn)
 
         B, N, C = x.shape
         qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, C // self.num_heads)
